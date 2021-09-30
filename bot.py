@@ -3,7 +3,7 @@ import time
 import datetime as dt
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
-from config import PREDICTION_ABI, PREDICTION_CONTRACT
+from contract import PREDICTION_ABI, PREDICTION_CONTRACT
 
 # BSC NODE
 w3 = Web3(Web3.HTTPProvider('https://bsc-dataseed1.binance.org/'))
