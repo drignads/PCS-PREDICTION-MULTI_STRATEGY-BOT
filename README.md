@@ -3,8 +3,6 @@ PancakeSwap Prediction V2 Player Bot [PYTHON]
 
 Requirements:
 
-´´´
-pip install web3
-´´´
+´pip install web3´
 
 
