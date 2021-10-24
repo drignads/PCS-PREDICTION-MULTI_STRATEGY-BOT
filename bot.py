@@ -33,8 +33,8 @@ def betBull(value, round):
         'gasPrice': GAS_PRICE,
     })
     signed_tx = w3.eth.account.signTransaction(bull_bet, private_key=PRIVATE_KEY)
-    w3.eth.sendRawTransaction(signed_tx.rawTransaction)
-    print(f'{bull_bet}')
+    w3.eth.sendRawTransaction(signed_tx.rawTransaction)     
+    print(f'{w3.eth.waitForTransactionReceipt(signed_tx.hash)}')
 
 
 def betBear(value, round):
@@ -47,7 +47,7 @@ def betBear(value, round):
     })
     signed_tx = w3.eth.account.signTransaction(bear_bet, private_key=PRIVATE_KEY)
     w3.eth.sendRawTransaction(signed_tx.rawTransaction)
-    print(f'{bear_bet}')
+    print(f'{w3.eth.waitForTransactionReceipt(signed_tx.hash)}')
 
 
 def makeBet(epoch):
@@ -59,11 +59,12 @@ def makeBet(epoch):
     value = w3.toWei(0.01, 'ether')
     rand = random.getrandbits(1)
     if rand:
-        betBull(value, epoch)
         print(f'Going Bull #{epoch} | {value} BNB  ')
+        betBull(value, epoch)        
     else:
-        betBear(value, epoch)
         print(f'Going Bear #{epoch} | {value} BNB  ')
+        betBear(value, epoch)
+        
 
 
 def newRound():
