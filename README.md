@@ -1,5 +1,6 @@
 # PredictionV2-bot
-PancakeSwap Prediction V2 Player Bot [PYTHON]
+PancakeSwap Prediction Bot - Predictionv0.2
+
 
 Requirements:
 
