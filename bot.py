@@ -20,10 +20,11 @@ GAS_PRICE = 5000000000
 # SECONDS LEFT BET AT
 SECONDS_LEFT = 8
 
-# WHEN BNB BALANCE IS BELLOW BNB_LIMIT
+# IF TRUE, WHEN BNB BALANCE IS BELLOW BNB_LIMIT
 # CLAIM ROUNDS INSIDE RANGE (CURRENT ROUND - RANGE)
 RANGE = 100
 BNB_LIMIT = 0.1
+CLAIM = True
 
 # V2 CONTRACT
 predictionContract = w3.eth.contract(address=PREDICTION_CONTRACT, abi=PREDICTION_ABI)
@@ -114,7 +115,8 @@ def newRound():
         current = predictionContract.functions.currentEpoch().call()
         data = predictionContract.functions.rounds(current).call()
         bet_time = dt.datetime.fromtimestamp(data[2]) - dt.timedelta(seconds=SECONDS_LEFT)
-        handleClaim()
+        if AUTO_CLAIM:
+            handleClaim()
         print(f'New round: #{current}')
         return [bet_time, current]
     except Exception as e:
