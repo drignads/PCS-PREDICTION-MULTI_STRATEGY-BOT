@@ -20,6 +20,11 @@ GAS_PRICE = 5000000000
 # SECONDS LEFT BET AT
 SECONDS_LEFT = 8
 
+# WHEN BNB BALANCE IS BELLOW BNB_LIMIT
+# CLAIM ROUNDS INSIDE RANGE (CURRENT ROUND - RANGE)
+RANGE = 100
+BNB_LIMIT = 0.1
+
 # V2 CONTRACT
 predictionContract = w3.eth.contract(address=PREDICTION_CONTRACT, abi=PREDICTION_ABI)
 
@@ -48,7 +53,44 @@ def betBear(value, round):
     signed_tx = w3.eth.account.signTransaction(bear_bet, private_key=PRIVATE_KEY)
     w3.eth.sendRawTransaction(signed_tx.rawTransaction)
     print(f'{w3.eth.waitForTransactionReceipt(signed_tx.hash)}')
+    
+    
+def claim(epochs):
+    claim = predictionContract.functions.claim(epochs).buildTransaction({
+        'from': ADDRESS,
+        'nonce': w3.eth.getTransactionCount(ADDRESS),
+        'value': 0,
+        'gas': 800000,
+        'gasPrice': 5000000000,
+    })
+    signed_tx = w3.eth.account.signTransaction(claim, private_key=PRIVATE_KEY)
+    w3.eth.sendRawTransaction(signed_tx.rawTransaction)
+    print(f'{w3.eth.waitForTransactionReceipt(signed_tx.hash)}') 
 
+    
+def fetchClaimable():
+    epochs = []
+    current = predictionContract.functions.currentEpoch().call()
+    epoch = current - 2
+    stop = epoch - RANGE
+
+    while epoch >= stop:
+        claimable = predictionContract.functions.claimable(epoch, ADDRESS).call()
+        if claimable:
+            epochs.append(epoch)
+        epoch -= 1
+    return epochs
+
+
+def handleClaim():
+    myBalance = w3.eth.getBalance(ADDRESS)
+    myBalance = w3.fromWei(myBalance, 'ether')
+    print(f'My Balance:  {myBalance:.5f} | Limit {BNB_LIMIT}')
+    if myBalance <= BNB_LIMIT:
+        epochs = fetchClaimable()
+        print(f'Balance Bellow {BNB_LIMIT} | Attempting to claim {len(epochs)} rounds...%\n {epochs}')
+        claim(epochs)
+    
 
 def makeBet(epoch):
     """
@@ -72,6 +114,7 @@ def newRound():
         current = predictionContract.functions.currentEpoch().call()
         data = predictionContract.functions.rounds(current).call()
         bet_time = dt.datetime.fromtimestamp(data[2]) - dt.timedelta(seconds=SECONDS_LEFT)
+        handleClaim()
         print(f'New round: #{current}')
         return [bet_time, current]
     except Exception as e:
@@ -86,7 +129,7 @@ def run():
             now = dt.datetime.now()
             if now >= round[0]:
                 makeBet(round[1])
-                time.sleep(180)
+                time.sleep(130)
                 round = newRound()
         except Exception as e:
             print(f'(error) Restarting...% {e}')
