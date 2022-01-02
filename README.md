@@ -1,5 +1,5 @@
 
-# PancakeSwap Prediction Bot - Predictionv0.2
+# PancakeSwap Prediction Bot - Prediction v0.2
 
 
 Requirements:
