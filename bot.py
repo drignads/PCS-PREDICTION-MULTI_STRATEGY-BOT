@@ -88,9 +88,13 @@ def handleClaim():
     myBalance = w3.fromWei(myBalance, 'ether')
     print(f'My Balance:  {myBalance:.5f} | Limit {BNB_LIMIT}')
     if myBalance <= BNB_LIMIT:
+        print(f'Balance Bellow {BNB_LIMIT}, fetching claimable rounds...%')
         epochs = fetchClaimable()
-        print(f'Balance Bellow {BNB_LIMIT} | Attempting to claim {len(epochs)} rounds...%\n {epochs}')
-        claim(epochs)
+        if len(epochs) > 0:
+            print(f'Attempting to claim {len(epochs)} rounds...%\n {epochs}')
+            claim(epochs)
+        else:
+            print(f'Sorry, no rounds to claim')
     
 
 def makeBet(epoch):
