@@ -119,7 +119,7 @@ def newRound():
         current = predictionContract.functions.currentEpoch().call()
         data = predictionContract.functions.rounds(current).call()
         bet_time = dt.datetime.fromtimestamp(data[2]) - dt.timedelta(seconds=SECONDS_LEFT)
-        if AUTO_CLAIM:
+        if CLAIM:
             handleClaim()
         print(f'New round: #{current}')
         return [bet_time, current]
