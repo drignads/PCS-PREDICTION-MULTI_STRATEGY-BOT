@@ -5,6 +5,7 @@ from web3 import Web3
 from web3.middleware import geth_poa_middleware
 from contract import PREDICTION_ABI, PREDICTION_CONTRACT
 
+
 # BSC NODE
 w3 = Web3(Web3.HTTPProvider('https://bsc-dataseed1.binance.org/'))
 w3.middleware_onion.inject(geth_poa_middleware, layer=0)
@@ -30,43 +31,43 @@ CLAIM = True
 predictionContract = w3.eth.contract(address=PREDICTION_CONTRACT, abi=PREDICTION_ABI)
 
 
-def betBull(value, round):
-    bull_bet = predictionContract.functions.betBull(round).buildTransaction({
+def bet_bull(value, epoch):
+    txn = predictionContract.functions.betBull(epoch).buildTransaction({
         'from': ADDRESS,
         'nonce': w3.eth.getTransactionCount(ADDRESS),
         'value': value,
         'gas': GAS,
         'gasPrice': GAS_PRICE,
     })
-    signed_tx = w3.eth.account.signTransaction(bull_bet, private_key=PRIVATE_KEY)
-    w3.eth.sendRawTransaction(signed_tx.rawTransaction)     
-    print(f'{w3.eth.waitForTransactionReceipt(signed_tx.hash)}')
+    signed_txn = w3.eth.account.signTransaction(txn, private_key=PRIVATE_KEY)
+    w3.eth.sendRawTransaction(signed_txn.rawTransaction)
+    print(f'{w3.eth.waitForTransactionReceipt(signed_txn.hash)}')
 
 
-def betBear(value, round):
-    bear_bet = predictionContract.functions.betBear(round).buildTransaction({
+def bet_bear(value, epoch):
+    txn = predictionContract.functions.betBear(epoch).buildTransaction({
         'from': ADDRESS,
         'nonce': w3.eth.getTransactionCount(ADDRESS),
         'value': value,
         'gas': GAS,
         'gasPrice': GAS_PRICE,
     })
-    signed_tx = w3.eth.account.signTransaction(bear_bet, private_key=PRIVATE_KEY)
-    w3.eth.sendRawTransaction(signed_tx.rawTransaction)
-    print(f'{w3.eth.waitForTransactionReceipt(signed_tx.hash)}')
+    signed_txn = w3.eth.account.signTransaction(txn, private_key=PRIVATE_KEY)
+    w3.eth.sendRawTransaction(signed_txn.rawTransaction)
+    print(f'{w3.eth.waitForTransactionReceipt(signed_txn.hash)}')
     
     
 def claim(epochs):
-    claim = predictionContract.functions.claim(epochs).buildTransaction({
+    txn = predictionContract.functions.claim(epochs).buildTransaction({
         'from': ADDRESS,
         'nonce': w3.eth.getTransactionCount(ADDRESS),
         'value': 0,
         'gas': 800000,
         'gasPrice': 5000000000,
     })
-    signed_tx = w3.eth.account.signTransaction(claim, private_key=PRIVATE_KEY)
-    w3.eth.sendRawTransaction(signed_tx.rawTransaction)
-    print(f'{w3.eth.waitForTransactionReceipt(signed_tx.hash)}') 
+    signed_txn = w3.eth.account.signTransaction(txn, private_key=PRIVATE_KEY)
+    w3.eth.sendRawTransaction(signed_txn.rawTransaction)
+    print(f'{w3.eth.waitForTransactionReceipt(signed_txn.hash)}')
 
     
 def fetchClaimable():
@@ -107,39 +108,37 @@ def makeBet(epoch):
     rand = random.getrandbits(1)
     if rand:
         print(f'Going Bull #{epoch} | {value} BNB  ')
-        betBull(value, epoch)        
+        bet_bull(value, epoch)
     else:
         print(f'Going Bear #{epoch} | {value} BNB  ')
-        betBear(value, epoch)
+        bet_bear(value, epoch)
         
-
 
 def newRound():
     try:
-        current = predictionContract.functions.currentEpoch().call()
-        data = predictionContract.functions.rounds(current).call()
+        current_epoch = predictionContract.functions.currentEpoch().call()
+        data = predictionContract.functions.rounds(current_epoch).call()
         bet_time = dt.datetime.fromtimestamp(data[2]) - dt.timedelta(seconds=SECONDS_LEFT)
         if CLAIM:
             handleClaim()
-        print(f'New round: #{current}')
-        return [bet_time, current]
-    except Exception as e:
-        print(f'New round fail - {e}')
+        print(f'New round: #{current_epoch}')
+        return [bet_time, current_epoch]
+    except Exception as error:
+        print(f'New round fail - {error}')
 
 
 def run():
-    round = newRound()
-    n = True
-    while n:
+    current_round = newRound()
+    while True:
         try:
             now = dt.datetime.now()
-            if now >= round[0]:
-                makeBet(round[1])
-                time.sleep(130)
-                round = newRound()
-        except Exception as e:
-            print(f'(error) Restarting...% {e}')
-            round = newRound()
+            if now >= current_round[0]:
+                makeBet(current_round[1])
+                time.sleep(40)
+                current_round = newRound()
+        except Exception as error:
+            print(f'Restarting...% {error}')
+            current_round = newRound()
 
 
 if __name__ == '__main__':
