@@ -3,7 +3,7 @@ import time
 import datetime as dt
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
-from contract import PREDICTION_ABI, PREDICTION_CONTRACT
+from utils.contract import PREDICTION_ABI, PREDICTION_CONTRACT
 
 
 # BSC NODE
