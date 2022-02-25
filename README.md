@@ -28,7 +28,7 @@ Watch tutorial: https://www.youtube.com/watch?v=kbHkeusFRIo&t=5s
 
 Clone or Download this repository, turn on your venv active and install the requirements with:
 
-```pip install -r requirements.txt```
+```pip install -r requirements```
 
 Run with
 
