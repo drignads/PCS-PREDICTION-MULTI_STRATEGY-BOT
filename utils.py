@@ -15,7 +15,7 @@ class dapps:
 
     list = {
         '1': 'PancakeSwap',
-        '2': 'DogeBets'
+        '2': 'DogeBets.gg'
     }
 
 
@@ -410,7 +410,7 @@ def dapp():
     print(f'       '
           f'       '
           f'        '
-          f'     PancakeSwap ({dapps.pancake})  |  DogeBets ({dapps.dogebets})'
+          f'     {dapps.list[dapps.pancake]} ({dapps.pancake})  |  {dapps.list[dapps.dogebets]} ({dapps.dogebets})'
           f' ')
 
     while True:
