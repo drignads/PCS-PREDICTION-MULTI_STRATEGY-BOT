@@ -93,7 +93,6 @@ I can not guarantee that you will loose or make money. Please, do your risk mane
 
 *This bot takes a tax comission of 2% over profits (only). The goal here is to be profitable to it's users by improving our strategies and user experience constantly. Join our telegram group for cash-backs and NFT giveaways. Please do not use it if you don't agree with the tax and goals, the repository is free @ MIT-license and one can create your own version.
 
-See [Roadmap]() for future improvements and [Contribution]() for collabs.
 
 Don't forget to [Join telegram](https://t.me/prediction_multi_strategy) :)
 
