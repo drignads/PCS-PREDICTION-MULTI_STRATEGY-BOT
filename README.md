@@ -19,9 +19,12 @@
 
 [Download](https://github.com/drignads/PCS-PREDICTION-MULTI_STRATEGY-BOT/releases/download/0.2.0/MultiStrategy.exe) the executable file and open it.
 
-*Choose yes when/if asked to install chromedriver.
+*Choose yes when/if asked to install chromedriver. 
+**Windows may throw a malware warning, this is a false positive, we are working on that. 
 
 ## Running from source (linux/windows/other OS's)
+
+Watch tutorial: https://www.youtube.com/watch?v=kbHkeusFRIo&t=5s
 
 Clone or Download this repository, turn on your venv active and install the requirements with:
 
