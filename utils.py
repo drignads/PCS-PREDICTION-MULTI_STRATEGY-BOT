@@ -9,6 +9,16 @@ w3 = Web3(Web3.HTTPProvider('https://bsc-dataseed1.binance.org/'))
 w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
 
+class dapps:
+    pancake = '1'
+    dogebets = '2'
+
+    list = {
+        '1': 'PancakeSwap',
+        '2': 'DogeBets'
+    }
+
+
 class options:
     skip = 's'
     restart = 'r'
@@ -102,98 +112,151 @@ class contract:
     ]
     SETTINGS_CONTRACT = '0xA374EAa85d433A29f79F491133538aBaAc980aAF'
     SETTINGS_ABI = [
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"inputs": [],
-		"name": "getSettings",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_secs",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_gas",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_gas_price",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_og",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_od",
-				"type": "address"
-			}
-		],
-		"name": "set",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "withdrawal",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	}
-]
+        {
+            "inputs": [],
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        },
+        {
+            "inputs": [],
+            "name": "getSettings",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "owner",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_secs",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_gas",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_gas_price",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_og",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_od",
+                    "type": "address"
+                }
+            ],
+            "name": "set",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "withdrawal",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        }
+    ]
+    DOGEBET_CONTRACT = '0x7B43d384fD83c8317415abeeF234BaDec285562b'
+    DOGEBET_ABI = [
+                   {
+                       "inputs": [{"internalType": "uint256", "name": "", "type": "uint256"},
+                                  {"internalType": "address", "name": "", "type": "address"}], "name": "Bets",
+                       "outputs": [
+                           {"internalType": "enum DogeBetsPredictionV1.Position", "name": "position", "type": "uint8"},
+                           {"internalType": "uint256", "name": "amount", "type": "uint256"},
+                           {"internalType": "bool", "name": "claimed", "type": "bool"}], "stateMutability": "view",
+                       "type": "function"},
+
+
+                   {
+                       "inputs": [{"internalType": "uint256", "name": "epoch", "type": "uint256"},
+                                  {"internalType": "address", "name": "user", "type": "address"}], "name": "Claimable",
+                       "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view",
+                       "type": "function"},
+
+
+                   {"inputs": [], "name": "IsPaused", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+                    "stateMutability": "view", "type": "function"},
+
+
+
+                   {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "name": "Rounds",
+                    "outputs": [{"internalType": "uint256", "name": "epoch", "type": "uint256"},
+                                {"internalType": "uint256", "name": "bullAmount", "type": "uint256"},
+                                {"internalType": "uint256", "name": "bearAmount", "type": "uint256"},
+                                {"internalType": "uint256", "name": "rewardBaseCalAmount", "type": "uint256"},
+                                {"internalType": "uint256", "name": "rewardAmount", "type": "uint256"},
+                                {"internalType": "int256", "name": "lockPrice", "type": "int256"},
+                                {"internalType": "int256", "name": "closePrice", "type": "int256"},
+                                {"internalType": "uint32", "name": "startTimestamp", "type": "uint32"},
+                                {"internalType": "uint32", "name": "lockTimestamp", "type": "uint32"},
+                                {"internalType": "uint32", "name": "closeTimestamp", "type": "uint32"},
+                                {"internalType": "uint32", "name": "lockPriceTimestamp", "type": "uint32"},
+                                {"internalType": "uint32", "name": "closePriceTimestamp", "type": "uint32"},
+                                {"internalType": "bool", "name": "closed", "type": "bool"},
+                                {"internalType": "bool", "name": "canceled", "type": "bool"}],
+                    "stateMutability": "view", "type": "function"},
+
+
+                   {"inputs": [], "name": "currentEpoch",
+                    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view",
+                    "type": "function"},
+
+
+                   {"inputs": [{"internalType": "uint256", "name": "epoch", "type": "uint256"}], "name": "user_BetBear",
+                    "outputs": [], "stateMutability": "payable", "type": "function"},
+                   {"inputs": [{"internalType": "uint256", "name": "epoch", "type": "uint256"}], "name": "user_BetBull",
+                    "outputs": [], "stateMutability": "payable", "type": "function"},
+                   {"inputs": [{"internalType": "uint256[]", "name": "epochs", "type": "uint256[]"}],
+                    "name": "user_Claim", "outputs": [], "stateMutability": "nonpayable", "type": "function"}]
 
 
 def clean_terminal():
@@ -214,7 +277,7 @@ def get_tax(txnhash, og):
     txnhash = txnhash.get('logs')
     txnhash = txnhash[0].get('data')
     profit = w3.toInt(hexstr=txnhash)
-    tax = profit * (og/100)
+    tax = profit * (og / 100)
     tax = round(tax)
     return {"tax": tax, "profit": w3.fromWei(profit, "ether")}
 
@@ -234,7 +297,6 @@ def is_valid_key(key):
         w3.eth.account.sign_message(message, private_key=key)
         return True
     except Exception as e:
-        print(e)
         return False
 
 
@@ -291,8 +353,9 @@ def menu():
                 copy_player_address = str(input(f'{bcolors.WARNING}Copy player address:{bcolors.ENDC} '))
                 if is_valid_address(copy_player_address):
                     print(f'{bcolors.OKCYAN} Copying {copy_player_address} %')
-                    bet_amount = str(input(f'{bcolors.WARNING}Bet Factor (bet_amount = copyplayer_bet_amount / bet_factor):'
-                                           f' {bcolors.ENDC}'))
+                    bet_amount = str(
+                        input(f'{bcolors.WARNING}Bet Factor (bet_amount = copyplayer_bet_amount / bet_factor):'
+                              f' {bcolors.ENDC}'))
                     if is_number(bet_amount):
 
                         print(f'{bcolors.OKCYAN} Starting {strategy_numbers.list[strategy_input]} strategy '
@@ -340,3 +403,29 @@ def non_manual_header():
 def copy_player_header():
     print(f'{bcolors.OKCYAN} Skip ({options.skip}) | Change Factor (value) | Go Manual ({options.go_manual}) |'
           f' Restart ({options.restart}) | Do nothing to continue{bcolors.ENDC}')
+
+
+def dapp():
+    print(f'{bcolors.HEADER}{37 * "="} SELECT DAPP {37 * "="}{bcolors.ENDC}\n')
+    print(f'       '
+          f'       '
+          f'        '
+          f'     PancakeSwap ({dapps.pancake})  |  DogeBets ({dapps.dogebets})'
+          f' ')
+
+    while True:
+        dapp_input = str(input(f'{bcolors.WARNING}Dapp number (1-2):{bcolors.ENDC} '))
+        if dapp_input.isnumeric():
+            if 1 <= int(dapp_input) <= 2:
+                print(f'{bcolors.OKCYAN} {dapps.list[dapp_input]} selected{bcolors.ENDC}')
+                break
+        else:
+            print(f'{bcolors.FAIL} Unknown command, try again')
+            continue
+    return dapp_input
+
+
+
+
+
+

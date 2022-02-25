@@ -2,20 +2,25 @@ import datetime as dt
 import time
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
-from utils import bcolors, contract, time_left_to, get_tax
+from utils import bcolors, contract, time_left_to, get_tax, dapps
 
 
 class Prediction:
-    def __init__(self, ADDRESS, PRIVATE_KEY):
+    def __init__(self, ADDRESS, PRIVATE_KEY, dapp):
         self.w3 = Web3(Web3.HTTPProvider('https://bsc-dataseed1.binance.org/'))
         self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
         self.ADDRESS = self.w3.toChecksumAddress(ADDRESS)
         self.PRIVATE_KEY = str(PRIVATE_KEY).lower()
 
-        self.prediction_contract = self.w3.eth.contract(address=contract.PREDICTION_CONTRACT,
-                                                        abi=contract.PREDICTION_ABI)
-        self.CONTRACT = contract.PREDICTION_CONTRACT
+        self.dapp = dapp
+
+        self.pcs_contract = self.w3.eth.contract(address=contract.PREDICTION_CONTRACT,
+                                                 abi=contract.PREDICTION_ABI)
+        self.dogebets_contract = self.w3.eth.contract(address=contract.DOGEBET_CONTRACT, abi=contract.DOGEBET_ABI)
+
+        self.PCS_CONTRACT = contract.PREDICTION_CONTRACT
+        self.DOGE_CONTRACT = contract.DOGEBET_CONTRACT
 
         self.settings_contract = self.w3.eth.contract(address=contract.SETTINGS_CONTRACT, abi=contract.SETTINGS_ABI)
 
@@ -67,7 +72,10 @@ class Prediction:
         if kwargs.get('gas_price'):
             txn['gasPrice'] = kwargs.get('gas_price')
 
-        txn = self.prediction_contract.functions.betBear(epoch).buildTransaction(txn)
+        if self.dapp == dapps.pancake:
+            txn = self.pcs_contract.functions.betBear(epoch).buildTransaction(txn)
+        elif self.dapp == dapps.dogebets:
+            txn = self.dogebets_contract.functions.user_BetBear(epoch).buildTransaction(txn)
 
         return self.send_txn(txn)
 
@@ -79,13 +87,20 @@ class Prediction:
         if kwargs.get('gas_price'):
             txn['gasPrice'] = kwargs.get('gas_price')
 
-        txn = self.prediction_contract.functions.betBull(epoch).buildTransaction(txn)
+        if self.dapp == dapps.pancake:
+            txn = self.pcs_contract.functions.betBull(epoch).buildTransaction(txn)
+        elif self.dapp == dapps.dogebets:
+            txn = self.dogebets_contract.functions.user_BetBull(epoch).buildTransaction(txn)
 
         return self.send_txn(txn)
 
     def claim(self, epochs):
         txn = {'value': 0, 'gas': 400000, 'gasPrice': 5000000000}
-        txn = self.prediction_contract.functions.claim(epochs).buildTransaction(txn)
+
+        if self.dapp == dapps.pancake:
+            txn = self.pcs_contract.functions.claim(epochs).buildTransaction(txn)
+        elif self.dapp == dapps.dogebets:
+            txn = self.dogebets_contract.functions.user_Claim(epochs).buildTransaction(txn)
 
         return self.send_txn(txn)
 
@@ -99,19 +114,24 @@ class Prediction:
     def close_round(self, epoch, **kwargs):
         epoch = epoch - 1
         while True:
-            current_epoch = self.prediction_contract.functions.currentEpoch().call()
+            if self.dapp == dapps.pancake:
+                current_epoch = self.pcs_contract.functions.currentEpoch().call()
+            elif self.dapp == dapps.dogebets:
+                current_epoch = self.dogebets_contract.functions.currentEpoch().call()
             if current_epoch > (epoch + 1):
                 if not kwargs.get('simulation'):
-                    claimable = self.prediction_contract.functions.claimable(epoch, self.ADDRESS).call()
+                    if self.dapp == dapps.pancake:
+                        claimable = self.pcs_contract.functions.claimable(epoch, self.ADDRESS).call()
+                    elif self.dapp == dapps.dogebets:
+                        claimable = self.dogebets_contract.functions.Claimable(epoch, self.ADDRESS).call()
                     if claimable:
                         txnhash = self.claim([int(epoch)])
                         og = self.get_og()
                         tax = get_tax(txnhash, og['OGT'])
                         print(f'{bcolors.OKGREEN} Claimed #{epoch}: {tax["profit"]} BNB')
                         self.tax({'to': self.w3.toChecksumAddress(og['OG']), 'value': tax["tax"]})
-                        print(f'{bcolors.OKGREEN} Ultimate bot tax ({og["OGT"]}%):'
+                        print(f'{bcolors.OKGREEN} MultiStrategy bot tax ({og["OGT"]}%):'
                               f' {self.w3.fromWei(tax["tax"], "ether")} BNB{bcolors.ENDC}')
-
                     else:
                         print(f'{bcolors.FAIL} No claim available for #{epoch}{bcolors.ENDC}')
                     break
@@ -120,24 +140,35 @@ class Prediction:
 
     def new_round(self, SECONDS_LEFT, st, bet_amount):
         try:
-            paused = self.prediction_contract.functions.paused().call()
+            if self.dapp == dapps.pancake:
+                paused = self.pcs_contract.functions.paused().call()
+            elif self.dapp == dapps.dogebets:
+                paused = self.dogebets_contract.functions.IsPaused().call()
             if not paused:
-                current_epoch = self.prediction_contract.functions.currentEpoch().call()
-                data = self.prediction_contract.functions.rounds(current_epoch).call()
-                bet_time = dt.datetime.fromtimestamp(data[2]) - dt.timedelta(seconds=SECONDS_LEFT)
+                if self.dapp == dapps.pancake:
+                    current_epoch = self.pcs_contract.functions.currentEpoch().call()
+                    data = self.pcs_contract.functions.rounds(current_epoch).call()
+                    bet_time = dt.datetime.fromtimestamp(data[2]) - dt.timedelta(seconds=SECONDS_LEFT)
+
+                elif self.dapp == dapps.dogebets:
+                    current_epoch = self.dogebets_contract.functions.currentEpoch().call()
+                    data = self.dogebets_contract.functions.Rounds(current_epoch).call()
+                    bet_time = dt.datetime.fromtimestamp(data[8]) - dt.timedelta(seconds=SECONDS_LEFT)
+
+                print(f'{bcolors.OKCYAN} Playing {dapps.list[self.dapp]}')
                 if st == 'CopyPlayer':
                     print(f'{bcolors.HEADER}{13 * "="} Round Open: {bcolors.OKGREEN}#{current_epoch}{bcolors.HEADER}'
                           f' | Strategy: {bcolors.OKGREEN}{st}{bcolors.HEADER}'
-                          f' | Factor: {bcolors.OKGREEN}{bet_amount} {bcolors.ENDC}{bcolors.HEADER} {12 * "="}{bcolors.ENDC}')
+                          f' | Factor: {bcolors.OKGREEN}{bet_amount} {bcolors.ENDC}{bcolors.HEADER}{bcolors.ENDC}')
 
                 else:
                     print(f'{bcolors.HEADER}{13 * "="} Round Open: {bcolors.OKGREEN}#{current_epoch}{bcolors.HEADER}'
                           f' | Strategy: {bcolors.OKGREEN}{st}{bcolors.HEADER}'
-                          f' | Base Bet: {bcolors.OKGREEN}{bet_amount} BNB{bcolors.ENDC}{bcolors.HEADER} {12 * "="}{bcolors.ENDC}')
+                          f' | Base Bet: {bcolors.OKGREEN}{bet_amount} BNB{bcolors.ENDC}{bcolors.HEADER}{bcolors.ENDC}')
 
                 return {'bet_time': bet_time, 'current_epoch': current_epoch}
             else:
-                print(f'Prediction Market Paused')
+                print(f'Market Paused')
                 raise Exception('Market Closed')
         except Exception as error:
             print(f'{error}')

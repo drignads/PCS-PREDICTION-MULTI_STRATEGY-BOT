@@ -139,8 +139,9 @@ if __name__ == '__main__':
     while True:
         if not is_auth:
             header()
+            dapp = dapp()
             account = validation()
-            pr = Prediction(account['address'], account['key'])
+            pr = Prediction(account['address'], account['key'], dapp)
             strategy = Strategies(pr)
             clean_terminal()
             is_auth = True

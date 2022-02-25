@@ -40,21 +40,32 @@ class Strategies:
         }
 
     def get_payouts(self, epoch):
-        data = self.pr.prediction_contract.functions.rounds(epoch).call()
-        bull_amount = self.pr.w3.fromWei(data[9], 'ether')
-        bear_amount = self.pr.w3.fromWei(data[10], 'ether')
+        if self.pr.dapp == dapps.pancake:
+            data = self.pr.pcs_contract.functions.rounds(epoch).call()
+            bull_amount = self.pr.w3.fromWei(data[9], 'ether')
+            bear_amount = self.pr.w3.fromWei(data[10], 'ether')
+            dapp_address = self.pr.PCS_CONTRACT.lower()
+            bull_input = '0x5'
+            bear_input = '0xa'
+        elif self.pr.dapp == dapps.dogebets:
+            data = self.pr.dogebets_contract.functions.Rounds(epoch).call()
+            bull_amount = self.pr.w3.fromWei(data[1], 'ether')
+            bear_amount = self.pr.w3.fromWei(data[2], 'ether')
+            dapp_address = self.pr.DOGE_CONTRACT.lower()
+            bull_input = '0x9'
+            bear_input = '0xd'
 
         pool = self.pr.w3.geth.txpool.content()
         pool = pool.pending
         for txs in pool:
             for tx in pool[txs]:
-                if str(pool[txs][tx]["to"]).lower() == self.pr.CONTRACT.lower():
+                if str(pool[txs][tx]["to"]).lower() == dapp_address:
                     value = self.pr.w3.toInt(hexstr=pool[txs][tx]["value"])
                     value = self.pr.w3.fromWei(value, 'ether')
                     input = pool[txs][tx]["input"]
-                    if input.startswith('0x5'):
+                    if input.startswith(bull_input):
                         bull_amount += value
-                    elif input.startswith('0xa'):
+                    elif input.startswith(bear_input):
                         bear_amount += value
 
         bull_multi = (bear_amount / bull_amount) + 1
@@ -70,8 +81,13 @@ class Strategies:
             return 'bear'
 
     def copy_player(self, epoch, player, timer, factor):
-        bull = '0x57fb096f'
-        bear = '0xaa6b873a'
+        if self.pr.dapp == dapps.pancake:
+            bull_input = '0x5'
+            bear_input = '0xa'
+        elif self.pr.dapp == dapps.dogebets:
+            bull_input = '0x9'
+            bear_input = '0xd'
+
         start_time = time.time()
         count = True
         while True:
@@ -83,14 +99,17 @@ class Strategies:
                     for tx in pool[txs]:
                         if str(pool[txs][tx]["from"]).lower() == str(player).lower():
                             input = pool[txs][tx]["input"]
-                            if input == bear:
+                            if input.startswith(bear_input):
                                 bet_amount = self.pr.w3.toInt(hexstr=pool[txs][tx]["value"]) // int(factor)
                                 return ['bear', bet_amount]
-                            if input == bull:
+                            if input.startswith(bull_input):
                                 bet_amount = self.pr.w3.toInt(hexstr=pool[txs][tx]["value"]) // int(factor)
                                 return ['bull', bet_amount]
                 if count:
-                    ledger = self.pr.prediction_contract.functions.ledger(epoch, player).call()
+                    if self.pr.dapp == dapps.pancake:
+                        ledger = self.pr.pcs_contract.functions.ledger(epoch, player).call()
+                    elif self.pr.dapp == dapps.dogebets:
+                        ledger = self.pr.dogebets_contract.functions.Bets(epoch, player).call()
                     if ledger[1] > 0:
                         bet_amount = ledger[1] // int(factor)
                         if ledger[0] == 0:
