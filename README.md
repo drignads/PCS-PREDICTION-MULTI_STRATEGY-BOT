@@ -1,10 +1,10 @@
 <p align="justify">
 
- # PancakeSwap Prediction MULTI STRATEGY Bot 
+ # Prediction MULTI STRATEGY Bot 
 
 
 
-## Prediction v0.2 
+## PancakeSwap Prediction v0.2 :heavy_check_mark: | Dogebets.gg Prediction :heavy_check_mark:
   ![gitico](https://user-images.githubusercontent.com/85583249/155407175-7fa0e06f-7679-4918-b6e6-ad079b75019a.png)
 ![image](https://img.shields.io/github/issues/drignads/PCS-PREDICTION-MULTI_STRATEGY-BOT)
 ![image](https://img.shields.io/github/forks/drignads/PCS-PREDICTION-MULTI_STRATEGY-BOT)
