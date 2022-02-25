@@ -1,10 +1,10 @@
 <p align="justify">
 
- # PancakeSwap Prediction MULTI STRATEGY Bot 
+ # Prediction MULTI STRATEGY Bot 
 
 
 
-## Prediction v0.2 
+## PancakeSwap Prediction v0.2 :heavy_check_mark: | Dogebets.gg Prediction :heavy_check_mark:
   ![gitico](https://user-images.githubusercontent.com/85583249/155407175-7fa0e06f-7679-4918-b6e6-ad079b75019a.png)
 ![image](https://img.shields.io/github/issues/drignads/PCS-PREDICTION-MULTI_STRATEGY-BOT)
 ![image](https://img.shields.io/github/forks/drignads/PCS-PREDICTION-MULTI_STRATEGY-BOT)
@@ -17,7 +17,7 @@
 
 ## Windows Installation
 
-[Download](https://github.com/drignads/PCS-PREDICTION-MULTI_STRATEGY-BOT/releases/download/0.2.0/MultiStrategy.exe) the executable file and open it.
+[Download](https://github.com/drignads/PCS-PREDICTION-MULTI_STRATEGY-BOT/releases/download/v0.2.1-beta/MultiStrategy.exe) the executable file and open it.
 
 *Choose yes when/if asked to install chromedriver. 
 **Windows may throw a malware warning, this is a false positive, we are working on that. 
@@ -28,7 +28,7 @@ Watch tutorial: https://www.youtube.com/watch?v=kbHkeusFRIo&t=5s
 
 Clone or Download this repository, turn on your venv active and install the requirements with:
 
-```pip install -r requirements.txt```
+```pip install -r requirements```
 
 Run with
 
