@@ -313,7 +313,6 @@ class Strategies:
         up_wyck = ((low - close) * 100) / close
         up_wyck = abs(up_wyck)
 
-        print(f'Down {down_wyck}%, up {up_wyck}%')
         if down_wyck > up_wyck and down_wyck > 0.13:
             position = 'bear'
         elif up_wyck > down_wyck and up_wyck > 0.13:
