@@ -6,8 +6,13 @@ from utils import bcolors, contract, time_left_to, get_tax, dapps
 
 
 class Prediction:
-    def __init__(self, ADDRESS, PRIVATE_KEY, dapp):
-        self.w3 = Web3(Web3.HTTPProvider('https://bsc-dataseed1.binance.org/'))
+    def __init__(self, ADDRESS, PRIVATE_KEY, dapp, node):
+        if node.startswith('https'):
+            self.w3 = Web3(Web3.HTTPProvider(node))
+            self.node = 'https'
+        elif node.startswith('ws'):
+            self.w3 = Web3(Web3.WebsocketProvider(node))
+            self.node = 'wss'
         self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
         self.ADDRESS = self.w3.toChecksumAddress(ADDRESS)
@@ -17,29 +22,14 @@ class Prediction:
 
         self.pcs_contract = self.w3.eth.contract(address=contract.PREDICTION_CONTRACT,
                                                  abi=contract.PREDICTION_ABI)
+
+        self.oracle_contract = self.w3.eth.contract(address=contract.ORACLE_CONTRACT, abi=contract.ORACLE_ABI)
         self.dogebets_contract = self.w3.eth.contract(address=contract.DOGEBET_CONTRACT, abi=contract.DOGEBET_ABI)
 
         self.PCS_CONTRACT = contract.PREDICTION_CONTRACT
         self.DOGE_CONTRACT = contract.DOGEBET_CONTRACT
 
         self.settings_contract = self.w3.eth.contract(address=contract.SETTINGS_CONTRACT, abi=contract.SETTINGS_ABI)
-
-    def get_settings(self):
-        default = {
-            'SECONDS_LEFT': 10,
-            'GAS': 400000,
-            'GAS_PRICE': 5100000000,
-        }
-        try:
-            settings = self.settings_contract.functions.getSettings().call()
-            return {
-                'SECONDS_LEFT': settings[0],
-                'GAS': settings[1],
-                'GAS_PRICE': settings[2],
-
-            }
-        except Exception:
-            return default
 
     def get_og(self):
         default = {
@@ -138,7 +128,11 @@ class Prediction:
                 else:
                     break
 
-    def new_round(self, SECONDS_LEFT, st, bet_amount):
+    def new_round(self, SECONDS_LEFT, st, bet_amount, bet_type):
+        if bet_type == '1':
+            bet_type = '%'
+        elif bet_type == '2':
+            bet_type = 'BNB'
         try:
             if self.dapp == dapps.pancake:
                 paused = self.pcs_contract.functions.paused().call()
@@ -164,7 +158,7 @@ class Prediction:
                 else:
                     print(f'{bcolors.HEADER}{13 * "="} Round Open: {bcolors.OKGREEN}#{current_epoch}{bcolors.HEADER}'
                           f' | Strategy: {bcolors.OKGREEN}{st}{bcolors.HEADER}'
-                          f' | Base Bet: {bcolors.OKGREEN}{bet_amount} BNB{bcolors.ENDC}{bcolors.HEADER}{bcolors.ENDC}')
+                          f' | Base Bet: {bcolors.OKGREEN}{bet_amount} {bet_type}{bcolors.ENDC}{bcolors.HEADER}{bcolors.ENDC}')
 
                 return {'bet_time': bet_time, 'current_epoch': current_epoch}
             else:
