@@ -421,7 +421,7 @@ def get_settings():
         'GAS_PRICE': 5100000000,
     }
     while True:
-        print(f'{bcolors.OKCYAN} Choose seconds left before round lock to place bets:{bcolors.ENDC}')
+        print(f'{bcolors.OKCYAN} Choose seconds left to place bets before round locks:{bcolors.ENDC}')
         seconds_left = str(input(f'{bcolors.WARNING}(Default: 10) Set seconds:{bcolors.ENDC} '))
         if is_number(seconds_left):
             if 3 < float(seconds_left):
