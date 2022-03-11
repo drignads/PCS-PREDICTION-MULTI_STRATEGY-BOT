@@ -159,7 +159,10 @@ if __name__ == '__main__':
             dapp = dapp()
             node = node()
             account = validation()
-            pr = Prediction(account['address'], account['key'], dapp, node)
+            try:
+                pr = Prediction(account['address'], account['key'], dapp, node)
+            except Exception:
+                pr = Prediction(account['address'], account['key'], dapp, 'https://bsc-dataseed1.binance.org/')
             strategy = Strategies(pr)
             clean_terminal()
             is_auth = True
