@@ -13,7 +13,8 @@
 ![image](https://img.shields.io/badge/python-3.8.10-brightgreen)
 ### [Join telegram](https://t.me/prediction_multi_strategy)
   
-![image](https://user-images.githubusercontent.com/85583249/155422019-0f044c3f-8837-4279-9e5d-089bb3c9ad8c.png)
+![image](https://user-images.githubusercontent.com/85583249/157816513-4eff4b12-d24c-41df-8a1f-a4f51a904cb5.png)
+
 
 ## Windows Installation
 
@@ -34,9 +35,14 @@ Run with
 
 ```python MultiStrategy.py``` 
 
-## Account
+## Node and Account
+ 
+Choose the node of your preference:
+ 
+ ![image](https://user-images.githubusercontent.com/85583249/157816771-5c1acae6-fdd6-4e1d-a069-e3169efef98c.png)
 
-Add your account address and private key to initiate. Or leave it blank and press enter for simulation mode.
+
+Add your account address and private key to initiate. Or leave it blank and press enter for simulation mode:
 
 ![image](https://user-images.githubusercontent.com/85583249/155382562-8ad94765-854f-423c-81e7-213b980577de.png)
 
@@ -45,22 +51,26 @@ You can find your private key on Metamask by going to Account Details > Export P
 *Your keys are safe, they are not saved or kept anywhere apart from your machine's temporary virtual environment while running the bot. Being destroyed when you close it.
 
 ## Strategies
-![image](https://user-images.githubusercontent.com/85583249/155391390-76946fe3-2ff2-481d-98aa-e7677ae39ff4.png)
+ 
+Choose strategy and settings:
+ 
+![image](https://user-images.githubusercontent.com/85583249/157817155-b13c57c7-96ca-4d4f-9dad-5279e7b4e0c4.png)
 
 
-You get 8 different strategies to choose:
+You get 13 different strategies to choose from and the possibility of inverting them:
+Tip: In our telegram group you can read backtests
 
 #### Auto Trend
 
-- Use MA indicator analysis to find a BEAR or BULL position, betting every round.
+- Find a BEAR or BULL position from TA analysis.
 
 #### Up Trend
 
-- Use MA indicator analysis to find a BULL position, only.
+- Find a BULL position, only.
 
 #### Down Trend
 
-- Use MA indicator analysis to find a BEAR position, only.
+- Find a BEAR position, only.
 
 #### Higher Payouts (against the pool)
 
@@ -80,9 +90,29 @@ You get 8 different strategies to choose:
 
 #### Copy Player
 
-- Using copy player strategy you can follow and copy the positions of any other player...[Find the winners](https://pancakeswap.finance/prediction/leaderboard) and just do what they do. *if they bet too late you may get a failed tx
-![image](https://user-images.githubusercontent.com/85583249/155389016-7ff263de-9cf0-4477-8417-948c5cb1ec65.png)
+- Copy the positions of any other player...[Find the winners](https://pancakeswap.finance/prediction/leaderboard) and just do what they do
 
+#### StochRSITrend
+ 
+- Find a Bull or Bear position based on the StochRSI trend
+ 
+####  Candle Movement
+ 
+- Finds a position based on candle pattern
+ 
+#### Spread
+ 
+- Finds a position based on the prices spread
+ 
+#### HigherPayoutSpreadBlock
+ 
+- Higher Payout + Spread
+ 
+#### HigherPayoutStochRSI
+ 
+- Higher Payout + StochRSITrend
+ 
+ 
 
 ## Disclaimer 
 [DrigNads](https://twitter.com/NadsDrig) aka Cabe Lo. Known member of the pcs community:
@@ -91,8 +121,7 @@ I strong recomend that you follow all the security instructions stated in this f
 
 I can not guarantee that you will loose or make money. Please, do your risk manegement properly.
 
-*This bot takes a tax comission of 2% over profits (only). The goal here is to be profitable to it's users by improving our strategies and user experience constantly. Join our telegram group for cash-backs and NFT giveaways. Please do not use it if you don't agree with the tax and goals, the repository is free @ MIT-license and one can create your own version.
-
+*This bot takes a tax comission of 2% over claims.
 
 Don't forget to [Join telegram](https://t.me/prediction_multi_strategy) :)
 
