@@ -12,7 +12,7 @@
 ![image](https://img.shields.io/github/license/drignads/PCS-PREDICTION-MULTI_STRATEGY-BOT)
 ![image](https://img.shields.io/badge/python-3.8.10-brightgreen)
  ![GitHub all releases](https://img.shields.io/github/downloads/drignads/PCS-PREDICTION-MULTI_STRATEGY-BOT/total)
- ![GitHub release (by tag)](https://img.shields.io/github/downloads/drignads/PCS-PREDICTION-MULTI_STRATEGY-BOT/v0.3.0/total)
+
  
 ### [Join telegram](https://t.me/prediction_multi_strategy)
   
