@@ -75,13 +75,13 @@ def run():
                     try:
                         user_input = inputimeout(prompt=f'{bcolors.WARNING}$:{bcolors.ENDC} ', timeout=timeout)
                         if user_input == options.go_bull:
-                            make_bet(current_round["current_epoch"], strategy_number, bet_amount, bet_type, is_inverted,
+                            make_bet(current_round["current_epoch"], strategy_number, bet_amount, bet_type, False,
                                      position='bull',
                                      simulation=simulation)
                             time_left_to(current_round['bet_time'])
                             is_playing = False
                         elif user_input == options.go_bear:
-                            make_bet(current_round["current_epoch"], strategy_number, bet_amount, bet_type, is_inverted
+                            make_bet(current_round["current_epoch"], strategy_number, bet_amount, bet_type, False
                                      ,position='bear',
                                      simulation=simulation)
                             time_left_to(current_round['bet_time'])
@@ -90,7 +90,7 @@ def run():
                             break
                         elif is_number(user_input):
                             bet_amount = float(user_input)
-                            print(f'{bcolors.OKCYAN} Amount changed to {bet_amount} BNB{bcolors.ENDC}')
+                            print(f'{bcolors.OKCYAN} Amount changed to {bet_amount}{bcolors.ENDC}')
                             continue
                         else:
                             print(f'{bcolors.FAIL} Unknown command, try again...{bcolors.ENDC}')

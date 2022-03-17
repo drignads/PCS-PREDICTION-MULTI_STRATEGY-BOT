@@ -353,18 +353,21 @@ def menu():
 
     copy_player_address = ''
     while True:
-        strategy_input = str(input(f'{bcolors.WARNING}Strategy Number (1-13):{bcolors.ENDC} '))
+        strategy_input = str(input(f'\n{bcolors.WARNING}Strategy Number (1-13):{bcolors.ENDC} '))
         if strategy_input.isnumeric():
             if int(strategy_input) != 8 and 1 <= int(strategy_input) <= 13:
                 print(f'{bcolors.OKCYAN} {strategy_numbers.list[strategy_input]} selected{bcolors.ENDC}')
 
-                is_inverted = str(input(f'{bcolors.WARNING}Invert it? (y/n): {bcolors.ENDC}'))
-                if is_inverted == 'y':
-                    is_inverted = True
-                    print(f'{bcolors.OKCYAN} Invert mode ON {bcolors.ENDC}')
+                if int(strategy_input) != 6:
+                    is_inverted = str(input(f'{bcolors.WARNING}Invert it? (y/n): {bcolors.ENDC}'))
+                    if is_inverted == 'y':
+                        is_inverted = True
+                        print(f'{bcolors.OKCYAN} Invert mode ON {bcolors.ENDC}')
+                    else:
+                        is_inverted = False
+                        print(f'{bcolors.OKCYAN} Invert mode OFF{bcolors.ENDC}')
                 else:
                     is_inverted = False
-                    print(f'{bcolors.OKCYAN} Invert mode OFF{bcolors.ENDC}')
 
                 print(f'{bcolors.OKCYAN} Betting: Percentage of account balance (1) / Fixed Amount (2){bcolors.ENDC}')
 
@@ -385,6 +388,9 @@ def menu():
                 else:
                     print(f'{bcolors.FAIL} Invalid bet amount, try again{bcolors.ENDC}')
             elif strategy_input == strategy_numbers.copy_player:
+                bet_type = '2'
+                btype = 'BNB'
+                is_inverted = False
                 print(f'{bcolors.OKCYAN} {strategy_numbers.list[strategy_input]} selected{bcolors.ENDC}')
                 copy_player_address = str(input(f'{bcolors.WARNING}Copy player address:{bcolors.ENDC} '))
                 if is_valid_address(copy_player_address):
