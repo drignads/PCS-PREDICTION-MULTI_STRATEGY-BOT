@@ -21,7 +21,7 @@
 
 ## Windows Installation
 
-[Download](https://github.com/drignads/PCS-PREDICTION-MULTI_STRATEGY-BOT/releases/download/v0.3.0/MultiStrategy.exe) the executable file and open it.
+[Download](https://github.com/drignads/PCS-PREDICTION-MULTI_STRATEGY-BOT/releases/download/v0.3.1/MultiStrategy.exe) the executable file and open it.
 
 *Choose yes when/if asked to install chromedriver. 
 **Windows may throw a malware warning, this is a false positive, we are working on that. 
