@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import pandas_ta as ta
 from tvDatafeed import TvDatafeed, Interval
-from inputimeout import inputimeout, TimeoutOccurred
 from utils import *
 import requests
 
@@ -24,10 +23,7 @@ class Indicators:
         return data
 
     def get_ma(self, mins, coin):
-
         ohlc = self.get_ohlcv(mins, coin)
-
-
         ma50 = ohlc.ta.ema(50)
         ma100 = ohlc.ta.ema(100)
         ma200 = ohlc.ta.ema(200)
@@ -89,8 +85,22 @@ class Strategies:
              '10': self.candle,
              '11': self.spread,
              '12': self.higher_with_spread_block,
-             '13': self.stochrsi_2
+             '13': self.stochrsi_2,
+             '14': self.always_bear,
+             '15': self.always_bull,
+             '16': self.average_true_range,
+             '17': self.heikin_ashi,
+             '18': self.ichimoku,
         }
+
+    # helpers
+
+    def get_last_alert(self, alert):
+        url = f'https://tester-mwb.herokuapp.com/alert/{alert}'
+        last_alert = requests.get(url).json()
+        last_alert = last_alert['data']
+
+        return last_alert[0]['position']
 
     def get_payouts(self, epoch):
         if self.pr.dapp == dapps.pancake:
@@ -145,7 +155,7 @@ class Strategies:
             spread = spread_value * 100 / current_price
             return spread
 
-    # Classic-base strategies:
+    # Non-TA strategies
 
     def higher_payout(self, mins, coin, epoch):
         payouts = self.get_payouts(epoch)
@@ -224,7 +234,13 @@ class Strategies:
             else:
                 return ['', 0]
 
-    # New strategies testing:
+    def always_bear(self, *args):
+        return 'bear'
+
+    def always_bull(self, *args):
+        return 'bull'
+
+    # TA strategies:
 
     def higher_with_spread_block(self, mins, coin, epoch):
         payouts = self.get_payouts(epoch)
@@ -362,4 +378,16 @@ class Strategies:
         if position != higher_payout_position:
             position = 'null'
 
+        return position
+
+    def average_true_range(self, *args):
+        position = self.get_last_alert('AverageTrueRange')
+        return position
+
+    def heikin_ashi(self, *args):
+        position = self.get_last_alert('HeikinAshi')
+        return position
+
+    def ichimoku(self, *args):
+        position = self.get_last_alert('Ichimoku')
         return position

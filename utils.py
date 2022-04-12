@@ -42,6 +42,11 @@ class strategy_numbers:
     spread = '11'
     higher_with_spread_block = '12'
     stochrsi_2 = '13'
+    always_bear = '14'
+    always_bull = '15'
+    average_true_range = '16'
+    heikin_ashi = '17'
+    ichimoku = '18'
 
     list = {
         '1': 'AutoTrend',
@@ -56,7 +61,12 @@ class strategy_numbers:
         '10': 'Candle',
         '11': 'Spread',
         '12': 'HigherPayoutSpreadBlock',
-        '13': 'HigherPayoutStochRSI'
+        '13': 'HigherPayoutStochRSI',
+        '14': 'AlwaysBear',
+        '15': 'AlwaysBull',
+        '16': 'AverageTrueRange',
+        '17': 'HeikinAshi',
+        '18': 'Ichimoku'
     }
 
 
@@ -218,7 +228,7 @@ class contract:
             "type": "function"
         }
     ]
-    DOGEBET_CONTRACT = '0x7B43d384fD83c8317415abeeF234BaDec285562b'
+    DOGEBET_CONTRACT = '0x76f2c7c0DeDca9B693630444a9526e95B3A6918e'
     DOGEBET_ABI = [
                    {
                        "inputs": [{"internalType": "uint256", "name": "", "type": "uint256"},
@@ -281,26 +291,14 @@ def clean_terminal():
 
 
 def header():
-    print(f'{bcolors.HEADER}{33 * "="} MULTI-STRATEGY BOT {34 * "="}{bcolors.ENDC}')
-
-    print(f'Welcome! '
-          f'\nGood Luck! {64 * " "}Exit(Ctrl+c)')
-
-
-def get_tax(txnhash, og):
-    txnhash = txnhash.get('logs')
-    txnhash = txnhash[0].get('data')
-    profit = w3.toInt(hexstr=txnhash)
-    tax = profit * (og / 100)
-    tax = round(tax)
-    return {"tax": tax, "profit": w3.fromWei(profit, "ether")}
+    print(f"""{bcolors.BOLD} MultiStrategy Prediction Bot{bcolors.ENDC}""")
 
 
 def is_valid_address(address):
     try:
         w3.toChecksumAddress(address)
         return True
-    except Exception:
+    except Exception as e:
         return False
 
 
@@ -312,6 +310,45 @@ def is_valid_key(key):
         return True
     except Exception as e:
         return False
+
+
+def get_tax(txnhash, og):
+    txnhash = txnhash.get('logs')
+    txnhash = txnhash[0].get('data')
+    profit = w3.toInt(hexstr=txnhash)
+    tax = profit * (og / 100)
+    tax = round(tax)
+    return {"tax": tax, "profit": w3.fromWei(profit, "ether")}
+
+
+def is_number(string):
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+
+
+def time_left_to(bet_time):
+    sleep_secs = (bet_time - dt.datetime.now()).total_seconds()
+    if sleep_secs >= 0:
+        time.sleep(sleep_secs)
+
+
+def manual_header():
+    print(f'{bcolors.OKCYAN} Go Bull ({options.go_bull}) | Go Bear ({options.go_bear}) | Change Base Bet (value) '
+          f'| Quit ({options.restart})'
+          f' | Do nothing to skip{bcolors.ENDC}')
+
+
+def non_manual_header():
+    print(f'{bcolors.OKCYAN} Skip ({options.skip}) | Change Base Bet (value) | Go Manual ({options.go_manual}) |'
+          f' Quit ({options.restart}) | Do nothing to continue{bcolors.ENDC}')
+
+
+def copy_player_header():
+    print(f'{bcolors.OKCYAN} Skip ({options.skip}) | Change Factor (value) | Go Manual ({options.go_manual}) |'
+          f' Quit ({options.restart}) | Do nothing to continue{bcolors.ENDC}')
 
 
 def validation():
@@ -341,7 +378,7 @@ def validation():
 
 
 def menu():
-    print(f'{bcolors.HEADER}{35 * "="} SELECT STRATEGY {35 * "="}{bcolors.ENDC}\n')
+    print(f'{bcolors.HEADER} Select Strategy{bcolors.ENDC}\n')
 
     sts = ''
     for st in strategy_numbers.list:
@@ -353,9 +390,9 @@ def menu():
 
     copy_player_address = ''
     while True:
-        strategy_input = str(input(f'\n{bcolors.WARNING}Strategy Number (1-13):{bcolors.ENDC} '))
+        strategy_input = str(input(f'\n{bcolors.WARNING}Strategy Number (1-18):{bcolors.ENDC} '))
         if strategy_input.isnumeric():
-            if int(strategy_input) != 8 and 1 <= int(strategy_input) <= 13:
+            if int(strategy_input) != 8 and 1 <= int(strategy_input) <= 18:
                 print(f'{bcolors.OKCYAN} {strategy_numbers.list[strategy_input]} selected{bcolors.ENDC}')
 
                 if int(strategy_input) != 6:
@@ -395,17 +432,38 @@ def menu():
                 copy_player_address = str(input(f'{bcolors.WARNING}Copy player address:{bcolors.ENDC} '))
                 if is_valid_address(copy_player_address):
                     print(f'{bcolors.OKCYAN} Copying {copy_player_address} %')
-                    bet_amount = str(
-                        input(f'{bcolors.WARNING}Bet Factor (bet_amount = copyplayer_bet_amount / bet_factor):'
-                              f' {bcolors.ENDC}'))
-                    if is_number(bet_amount):
+                    print(
+                        f'{bcolors.OKCYAN} Betting: Percentage of account balance (1) / Fixed Amount (2) / Factor (3){bcolors.ENDC}')
 
+                    bet_type = str(input(f'{bcolors.WARNING}Bet Type (1-3): {bcolors.ENDC}'))
+                    if bet_type == '2':
+                        bet_amount = str(input(f'{bcolors.WARNING}Amount (BNB): {bcolors.ENDC}'))
+                        btype = 'BNB'
+                    elif bet_type == '1':
+                        bet_amount = str(input(f'{bcolors.WARNING}Percentage (0-100): {bcolors.ENDC}'))
+                        btype = '%'
+                    elif bet_type == '3':
+                        bet_amount = str(
+                            input(f'{bcolors.WARNING}Bet Factor (bet_amount = copyplayer_bet_amount / bet_factor):'
+                                  f' {bcolors.ENDC}'))
+                        if is_number(bet_amount):
+
+                            print(f'{bcolors.OKCYAN} {strategy_numbers.list[strategy_input]} strategy '
+                                  f'| Bet Factor: {bet_amount} {bcolors.ENDC}\n')
+                            break
+                        else:
+                            print(f'{bcolors.FAIL} Invalid bet factor, try again')
+                            continue
+                    else:
+                        print(f'{bcolors.FAIL} Wrong value, try again{bcolors.ENDC}')
+                        continue
+                    if is_number(bet_amount):
                         print(f'{bcolors.OKCYAN} {strategy_numbers.list[strategy_input]} strategy '
-                              f'| Bet Factor: {bet_amount} {bcolors.ENDC}\n')
+                              f'| Base Bet: {bet_amount} {btype}{bcolors.ENDC}\n')
                         break
                     else:
-                        print(f'{bcolors.FAIL} Invalid bet factor, try again')
-                        continue
+                        print(f'{bcolors.FAIL} Invalid bet amount, try again{bcolors.ENDC}')
+
                 else:
                     print(f'{bcolors.FAIL} Invalid address, try again')
                     continue
@@ -448,36 +506,6 @@ def get_settings():
             continue
 
     return settings
-
-
-def is_number(string):
-    try:
-        float(string)
-        return True
-    except ValueError:
-        return False
-
-
-def time_left_to(bet_time):
-    sleep_secs = (bet_time - dt.datetime.now()).total_seconds()
-    if sleep_secs >= 0:
-        time.sleep(sleep_secs)
-
-
-def manual_header():
-    print(f'{bcolors.OKCYAN} Go Bull ({options.go_bull}) | Go Bear ({options.go_bear}) | Change Base Bet (value) '
-          f'| Restart ({options.restart})'
-          f' | Do nothing to skip{bcolors.ENDC}')
-
-
-def non_manual_header():
-    print(f'{bcolors.OKCYAN} Skip ({options.skip}) | Change Base Bet (value) | Go Manual ({options.go_manual}) |'
-          f' Restart ({options.restart}) | Do nothing to continue{bcolors.ENDC}')
-
-
-def copy_player_header():
-    print(f'{bcolors.OKCYAN} Skip ({options.skip}) | Change Factor (value) | Go Manual ({options.go_manual}) |'
-          f' Restart ({options.restart}) | Do nothing to continue{bcolors.ENDC}')
 
 
 def dapp():

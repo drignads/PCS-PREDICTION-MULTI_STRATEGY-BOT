@@ -41,7 +41,6 @@ class Prediction:
             return {
                 'OG': self.w3.toChecksumAddress(settings[3]),
                 'OGT': settings[4],
-
             }
         except Exception:
             return default
@@ -133,6 +132,8 @@ class Prediction:
             bet_type = '%'
         elif bet_type == '2':
             bet_type = 'BNB'
+        elif bet_type == '3':
+            bet_type = 'f%'
         try:
             if self.dapp == dapps.pancake:
                 paused = self.pcs_contract.functions.paused().call()
@@ -148,18 +149,16 @@ class Prediction:
                     current_epoch = self.dogebets_contract.functions.currentEpoch().call()
                     data = self.dogebets_contract.functions.Rounds(current_epoch).call()
                     bet_time = dt.datetime.fromtimestamp(data[8]) - dt.timedelta(seconds=SECONDS_LEFT)
-
                 print(f'{bcolors.OKCYAN} Playing {dapps.list[self.dapp]}')
                 if st == 'CopyPlayer':
-                    print(f'{bcolors.HEADER}{13 * "="} Round Open: {bcolors.OKGREEN}#{current_epoch}{bcolors.HEADER}'
+                    print(f'{bcolors.HEADER}{32 * "="} Round Open: {bcolors.OKGREEN}#{current_epoch}{bcolors.HEADER}'
                           f' | Strategy: {bcolors.OKGREEN}{st}{bcolors.HEADER}'
-                          f' | Factor: {bcolors.OKGREEN}{bet_amount} {bcolors.ENDC}{bcolors.HEADER}{bcolors.ENDC}')
+                          f' | Base Bet: {bcolors.OKGREEN}{bet_amount} {bet_type} {bcolors.ENDC}{bcolors.HEADER}{bcolors.ENDC}')
 
                 else:
-                    print(f'{bcolors.HEADER}{13 * "="} Round Open: {bcolors.OKGREEN}#{current_epoch}{bcolors.HEADER}'
+                    print(f'{bcolors.HEADER}{32 * "="} Round Open: {bcolors.OKGREEN}#{current_epoch}{bcolors.HEADER}'
                           f' | Strategy: {bcolors.OKGREEN}{st}{bcolors.HEADER}'
                           f' | Base Bet: {bcolors.OKGREEN}{bet_amount} {bet_type}{bcolors.ENDC}{bcolors.HEADER}{bcolors.ENDC}')
-
                 return {'bet_time': bet_time, 'current_epoch': current_epoch}
             else:
                 print(f'Market Paused')

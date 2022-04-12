@@ -15,7 +15,8 @@ def make_bet(epoch, strategy_number, bet_amount, bet_type, is_inverted, **kwargs
     elif strategy_number == strategy_numbers.copy_player:
         cp_player = strategy.call[strategy_number](epoch, kwargs.get('player'), 15, bet_amount)
         position = cp_player[0]
-        bet_amount = w3.fromWei(cp_player[1], 'ether')
+        if bet_type == '3':
+            bet_amount = w3.fromWei(cp_player[1], 'ether')
     else:
         position = strategy.call[strategy_number](5, 'BNBUSD', epoch)
 
@@ -156,6 +157,8 @@ if __name__ == '__main__':
     while True:
         if not is_auth:
             header()
+            print(f'{bcolors.OKCYAN} Version: {bcolors.OKGREEN} v1.0')
+            print(f'{bcolors.OKGREEN} Good Luck!')
             dapp = dapp()
             node = node()
             account = validation()
@@ -167,6 +170,8 @@ if __name__ == '__main__':
             clean_terminal()
             is_auth = True
         header()
+        print(f'{bcolors.OKCYAN} Version: {bcolors.OKGREEN} v1.0')
+        print(f'{bcolors.OKGREEN} Good Luck!')
         strategy_settings = menu()
         settings = get_settings()
         run()
