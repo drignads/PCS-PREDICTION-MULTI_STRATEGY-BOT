@@ -1,3 +1,4 @@
+# v1.0
 from prediction import Prediction
 from strategies import Strategies
 from inputimeout import inputimeout, TimeoutOccurred
